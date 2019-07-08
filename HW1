@@ -176,10 +176,15 @@ print(matrix1.I)
    f(A)= x_{11}^2 x_{22} x_{23} + x_{11}x_{12}x_{13}x_{31}-x_{33}^2 x_{32} x_{21}
    \end{equation*}
 
+
+![alt text](https://github.com/dominiqueacuna/PHYS-243/blob/master/IMG_0468.HEIC "HW1Problem2.3")
+
 	\item \textbf{Part 4:} Find the Hessian Matrix for:
    \begin{equation*}
 	g(x,y,z)=x^3y+yz\sin(x)+xy^2z^5
   \end{equation*}
+  
+  ![alt text](https://github.com/dominiqueacuna/PHYS-243/blob/master/IMG_2500.HEIC "HW1Problem2.4")
    	
 \section*{Problem 3: Machine Learning}
  \item \textbf{Part 1:} Explain the difference between validation and test samples. 
