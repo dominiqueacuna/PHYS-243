@@ -67,6 +67,69 @@ Also, make sure to clearly \textbf{state the assumptions} you are making at each
 
 
 \textit{\textbf{Tip:} You can/should make reasonable assumption about the data.} 
+#Assumptions:
+#Probability of getting in an accident is p. Probability of not getting in an accient is q=1-p
+#Assume day of week does not matter-Data is independent 
+#No info about prior distribution so assume Uniform
+data_array = [16, 24, 16, 12, 16, 11, 14, 15, 9, 14, 7]
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+plt.rc('text', usetex=True)
+plt.rc('font', family='serif')
+def binomial(n=0, N=1, p=1):
+    """
+    This is the probability mass function for the binomial distribution.
+
+    INPUT:
+            n: Number of desired outcome
+            N: Number of trials
+            p: Probability of a desired outcome for each separate hour
+
+    OUTPUT:
+            Probability of getting n desired outcome, out of N trials,
+            when the probability of desired outcome is p
+    """
+    from math import factorial
+    factor = factorial(N)/(factorial(n)*factorial(N-n))
+    return factor*(p**n)*(1-p)**(N-n)
+number_of_points = 10**5
+prior_p = np.linspace(0,1, number_of_points)
+from time import time
+
+vec_binomial = np.vectorize(binomial)
+
+N = 24
+
+prob_p_cat=np.zeros(number_of_points)
+
+ti=time()
+for i,p in enumerate(prior_p):
+    prob_p_cat[i] = np.prod(vec_binomial(data_array, N, p))
+tf=time()-ti
+
+
+print("numpy.vectorize method for {} data points and {} simulations (sampling p) takes: {:10.3f} seconds ".format(len(data_array), number_of_points, tf))
+prior_p[prob_p_cat==max(prob_p_cat)]
+
+
+fig_p = plt.figure(figsize=(8,8))
+
+# Just normalizing the probability to maximum value so most likely
+# value corresponds to 1.
+# For getting the through probability we need to find the Integral
+# of the un-normalized distribution.
+
+plt.plot(prior_p, prob_p_cat/max(prob_p_cat),  markersize=1)
+
+plt.title(r"\textbf{Probability distribution of fairness measure($p$)}", fontsize=20)
+
+plt.xlabel(r"Getting into an Accident: $p$", fontsize=18)
+plt.ylabel(r"Aribitrary Normalized Probability", fontsize=18)
+
+
+plt.show()
 
 
 \section*{Problem 2: Find the parameters!}
@@ -89,4 +152,9 @@ Your function should take two vectors:
 \end{equation*}
 
 And return $\mu$ and $\sigma$.
+
+from scipy.stats import norm 
+
+print(norm.mean(), norm.std())
+
 \end{document}
