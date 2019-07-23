@@ -41,7 +41,7 @@
 % Edit these as appropriate
 \newcommand\course{PHYS 243}
 \newcommand\hwnumber{3}                  % <-- homework number
-\newcommand\MyName{TA: Abtin Shahidi}           % <-- My name
+\newcommand\MyName{Dominique Acuna}           % <-- My name
 
 \pagestyle{fancyplain}
 \headheight 35pt
@@ -121,12 +121,53 @@ There it is! We have our new formula for $\pi$:
 \item Find the probability for the case of $l>t$.
 \end{enumerate}
 
+![alt text](https://github.com/dominiqueacuna/PHYS-243/blob/master/IMG_5134.HEIC "HW3Problem1")
+
 \subsubsection*{Numerical simulation:} 
 In this part you need to perform a Monte Carlo simulation: \\
 \textit{($20\%$ Bonus for Object Oriented implementation)}
 
 \begin{enumerate}[resume]
 \item {Find the probability using Monte Carlo simulation for $l<t$, for the general case and find the value of the $\pi$ using some special case (e.g. $l = 2$, and $t = 3$)}  
+'''
+l is length of needle
+t is needle width
+theta is angle needle from direction of strips
+x is the x position of the needles center from the nearest line
+0  < theta < pi/2
+0 < xcenter < b/2
+
+nhits <===  number of hits of needle centered at x, with orientation theta
+nhits = 1 if x < a/2 and abs(theta) < arcos(x/(a/2))
+      = 0 otherwise
+'''
+import random
+import math
+
+def buffon(n,r,l,t):
+    data=[]
+    for jj in range(r):
+        nhits = 0
+        for ii in range(n):
+            xcent = random.uniform(0,t/2.0)
+            theta = random.uniform(0,math.pi/2)
+            xtip  = xcent - (l/2.0)*math.cos(theta)  #use of cosine not historically accurate
+            if xtip < 0 :
+                nhits += 1
+        #print str(jj)+'            '+str(nhits)+'               '+str((6.0/l*float(t))*nhits/n)
+        c = 2.0*l*n
+        d = t*nhits
+        print str(jj)+'            '+str(nhits)+'               '+str(c/d)
+        data.append([jj,nhits])
+    return data
+        
+
+r=5
+n=4000
+l = 2
+t = 2
+
+hits= buffon(n,r,l,t)
 
 \item Find the probability using Monte Carlo simulation ($l>t$) for the general case. 
 
