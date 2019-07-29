@@ -1,0 +1,47 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Sun Jul 28 22:29:25 2019
+
+@author: dominiquecacuna
+"""
+
+import numpy as np
+import pandas as pd
+import random
+import matplotlib.pyplot as plt
+
+#Now train classifier on training_data and Nephritise
+data2={'nausea':[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,1,1,0,1,1,0,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1,0,0,1,1,0,1,0,1,0,1,1,0,1,0,1,0,1,0,1,0,0,1,0,0],
+'lumbar_pai':[1,0,1,0,1,1,0,1,0,0,0,1,1,0,1,1,0,0,0,1,0,0,1,0,0,0,0,0,1,0,0,0,1,0,1,0,0,1,0,0,1,1,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,0,1,1,1,1,1,0,1,1,1,0,1,1,1,0,1,1,1,1,1,1,1,0,1,1,1,1,0,1,1,1,0,1,1,1,1,0,1,1,1],
+'frequent_urination':[0,1,0,1,0,0,1,0,1,1,1,0,0,1,0,0,1,1,1,0,1,1,0,1,1,1,1,1,0,1,1,1,0,1,0,1,1,0,1,1,0,0,1,1,1,1,1,1,1,1,0,1,0,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,1,1,1,0,0,1,1,1,1,0,0,1,1,0,0,1,1,0,0,1,1,1,1,1,1,0,0,1,1,1,0,0,1,1,0,0,1,1,1,0,0,1,1],
+'painful_urination':[0,1,0,1,0,0,1,0,1,1,1,0,0,1,0,0,1,1,1,0,1,1,0,1,1,1,1,0,0,1,0,1,0,0,0,1,0,0,0,1,0,0,1,0,0,1,1,1,1,1,0,0,0,1,0,1,1,0,1,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,1,1,0,1,1,0,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1,0,0,1,1,0,1,0,1,0,1,1,0,1,0,1,0,1,0,1,0,0,1,0,0],
+'burning_urethra':[0,1,0,1,0,0,1,0,1,1,1,0,0,1,0,0,1,1,1,0,0,0,0,1,1,1,1,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,1,0,1,0,0,1,1,0,0,0,0,0,1,0,0,1,0,0,0,1,1,0,0,1,1,0,0,1,1,0,0,0,1,1,0,0,1,0,1,0,0,1,1],
+'acute_nephritis':[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,0,1,1,1,1,1,0,1,1,1,0,1,1,1,0,1,1,1,1,1,1,1,0,1,1,1,1,0,1,1,1,0,1,1,1,1,0,1,1,1]}
+
+training_data2=pd.DataFrame(data2)
+        
+print(training_data2)
+
+X2 = training_data2.iloc[:, :-1].values
+y2 = training_data2.iloc[:, 4].values
+
+from sklearn.model_selection import train_test_split
+X_train2, X_test2, y_train2, y_test2 = train_test_split(X2, y2, test_size=0.20)
+
+from sklearn.preprocessing import StandardScaler
+scaler = StandardScaler()
+scaler.fit(X_train2)
+
+X_train2 = scaler.transform(X_train2)
+X_test2 = scaler.transform(X_test2)
+
+from sklearn.neighbors import KNeighborsClassifier
+classifier = KNeighborsClassifier(n_neighbors=1)
+classifier.fit(X_train2, y_train2)
+
+y_pred2 = classifier.predict(X_test2)
+
+from sklearn.metrics import classification_report, confusion_matrix
+print(confusion_matrix(y_test2, y_pred2))
+print(classification_report(y_test2, y_pred2))
