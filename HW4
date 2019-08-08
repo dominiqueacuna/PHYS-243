@@ -41,7 +41,7 @@
 % Edit these as appropriate
 \newcommand\course{PHYS 243}
 \newcommand\hwnumber{4}                  % <-- homework number
-\newcommand\MyName{TA: Abtin Shahidi}           % <-- My name
+\newcommand\MyName{Dominique Acuna}           % <-- My name
 
 \pagestyle{fancyplain}
 \headheight 35pt
@@ -67,9 +67,346 @@ For each section below you need to measure your performance. So, make sure to ru
 
 \begin{enumerate}
 \item Find the 9s using K-Nearest neighbours for Minkowski metric of order (1, 2, 3). 
+
+Created on Thu Aug  8 08:53:49 2019
+
+import numpy as np
+import random
+import matplotlib.pyplot as plt
+
+
+# use LaTeX fonts in the plot
+plt.rc('text', usetex=True)
+plt.rc('font', family='serif')
+
+try:
+    from sklearn.datasets import fetch_openml
+    mnist = fetch_openml('mnist_784', version=1, cache=True)
+    mnist.target = mnist.target.astype(np.int8)
+except ImportError:
+    from sklearn.datasets import fetch_mldata
+    mnist = fetch_mldata('MNIST original')
+mnist["data"], mnist["target"]
+
+
+(array([[0., 0., 0., ..., 0., 0., 0.],
+        [0., 0., 0., ..., 0., 0., 0.],
+        [0., 0., 0., ..., 0., 0., 0.],
+        ...,
+        [0., 0., 0., ..., 0., 0., 0.],
+        [0., 0., 0., ..., 0., 0., 0.],
+        [0., 0., 0., ..., 0., 0., 0.]]),
+ array([5, 0, 4, ..., 4, 5, 6], dtype=int9))
+    
+example = mnist["data"][-1].reshape(28, 28)
+
+import matplotlib as mpl
+
+plt.imshow(example, cmap=mpl.cm.binary)
+
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
+from sklearn import svm
+
+#Using the first 5000 data points
+X_train, X_test, y_train, y_test = train_test_split(mnist["data"][:5000], mnist["target"][:5000], test_size=0.2)
+svm_clf = svm.SVC(kernel="linear",)
+svm_clf.fit(X_train, y_train)
+
+y_prediction = svm_clf.predict(X_test)
+print("The accuracy of the predictions on the test set is =", Measure_accuracy(y_test, y_prediction))
+
+import matplotlib as mpl
+plt.figure(figsize=(12, 12))
+
+j = 331
+for i in range(0,9):
+    example = X_test[i].reshape(28, 28)
+    plt.subplot(j); plt.imshow(example, cmap=mpl.cm.binary)
+    plt.text(0, 2, "prediction = {}".format(y_prediction[i]))
+    j+=1
+
+plt.show()
+
+def Minkowski_d(x1, x2, p=3):
+    """ Function from L^p
+    This is a function for defining a general distance measure between any
+    given N-dimensional vectors:     x1, x2
+
+    INPUT:
+    ------
+           x1 (list or array of floats) : First vector
+           x2 (list or array of floats) : Second vector
+           p (float) : The power in our Minkowski definition
+
+    OUTPUT:
+    -------
+            (float) : The Minkowski distance of power p
+                      between x1 and x2
+    """
+
+    # Assuming we have a list or an array of numbers
+    # Creating a variable for summation
+    _sum_=0
+    # Now we go through every element on the arrays and
+    # will find the distance and add them  
+    for x1_, x2_ in zip(x1, x2):
+        dummy = pow(abs(x1_-x2_), p)
+        _sum_+=dummy
+    distance = pow(_sum_, 1/p)
+    return distance
+
+Minkowski_d(np.linspace(1,100,200), np.zeros(200), 10.4)
+
+class Point:
+    def __init__(self, features, label = None, \
+                 name = "Unassigned"):
+        self.name = name
+        self.features = features
+        self.label = label
+
+    # get the dimensionality of the features
+    def get_dimension(self):
+        return len(self.features)
+
+    def get_features(self):
+        return self.features
+
+    def get_label(self):
+        return self.label
+
+    def get_name(self):
+        return self.name
+
+    def distance_Minkowski(self, other, p = 3):
+        return Minkowski_d(self.features, other.get_features(), p)
+    distance_Minkowski.__doc__ = Minkowski_d.__doc__
+
+    def get_norm(self, p = 3):
+        _zero_=[0 for _ in range(self.get_dimension())]
+        return Minkowski_d(self.features, _zero_, p)
+
+    def __str__(self):
+        return self.name +" : "+ str(self.features) + ' : '\
+               + str(self.label)
+               
+class Cluster:
+    def __init__(self, points):
+        self.points = points
+        self.centroid = self.find_centroid()
+
+    def find_centroid(self):
+        _sum_ = np.zeros(self.points[0].get_dimension())
+        for point in self.points:
+            _sum_+=np.array(point.get_features())
+        Centroid_vec = _sum_/len(self.points)
+        centroid = Point(Centroid_vec, name = "Centroid")
+        return centroid
+
+    def update(self, points):
+        # Keep the old centroid
+        previous_centroid = self.centroid
+        # Update the Cluster attribiutes
+        self.points = points
+        self.centroid = self.find_centroid()
+        return self.centroid.distance_Minkowski(previous_centroid)
+
+    def variability(self, p = 3):
+        _sum_distances_=0
+        for point in self.points:
+            _sum_distances_ += point.distance_Minkowski(self.centroid, p)
+        return _sum_distances_
+
+
+    def Elements(self):
+        for point in self.points:
+            yield point
+
+    def __str__(self):
+        names = []
+        for point in self.points:
+            names.append(point.get_name())
+        names.sort()
+        info = "Cluster Centroid: " \
+               + str(self.centroid.features) +  "contains:" + "\n"
+        for name in names:
+            info = info + name + ", "
+        return info[:-2] #remove trailing comma and space  
+    
+def Dissimilarity(_clusters_, p = 3):
+    _tot_vari = 0
+    for _cluster_ in _clusters_:
+        _tot_vari += _cluster_.variability(p)
+    return _tot_vari
+
+data = {}
+
+with open("mnist.data", 'r') as f:
+    lines = f.readlines()
+    header = lines[0].split()
+
+    for i, col in enumerate(header):
+        x = []
+        for line in lines[1:]:
+            x.append(float(line.split()[i]))
+            data[col] = x
+
+  
+def K_Means_Clustering(points, k, verbose = False):
+    # Get k random initial centroids, create cluster for each
+    initial_centroids = random.sample(points, k)
+    clusters = []
+    for centroid in initial_centroids:
+        clusters.append(Cluster([centroid]))
+
+    #Iterate until centroids don't move
+    converged = False
+    number_iterations = 0
+    while not converged:
+        number_iterations += 1
+        #Create a list containing k distinct empty lists
+        new_clusters = []
+        for i in range(k):
+            new_clusters.append([])
+
+        # Associate each example with closest centroid
+        for p in points:
+            # Find the closest centroid
+            smallest_distance = p.distance_Minkowski(clusters[0].find_centroid())
+            idi = 0
+            for i in range(1, k):
+                distance = p.distance_Minkowski(clusters[i].find_centroid())
+                if distance < smallest_distance:
+                    smallest_distance = distance
+                    idi = i
+            #Add p to the list of examples for appropriate cluster
+            new_clusters[idi].append(p)
+
+        for c in new_clusters: # Avoid having empty clusters
+            if len(c) == 0:
+                raise ValueError('Empty Cluster')
+
+        # Update each cluster; check if a centroid has changed
+        converged = True
+        for i in range(k):
+            if clusters[i].update(new_clusters[i]) > 0.0:
+                converged = False
+        if verbose:
+            print('Iteration #' + str(number_iterations))
+            for c in clusters:
+                print(c)
+            print('') #add blank line
+    return clusters
+
+clusters = K_Means_Clustering(_points_, 3)
+color = "b"
+
+plt.figure(figsize=(10,7))
+
+for cluster in clusters:
+    for p in list(cluster.points):
+        plt.scatter(p.get_features()[0], p.get_features()[1], color = color)
+    color = "r"
+    plt.scatter(cluster.find_centroid().get_features()[0], cluster.find_centroid().get_features()[1], color = "k")
+
+plt.title(r"3-Means Clustering")
+
+
+plt.show()
+
 \item Find the 9s using Decision tree. 
+
+
+x_c1 = int < 9
+x_c2 = 9
+
+
+plt.plot(x_c1, "r.", markersize=20)
+plt.plot(x_c2, "b.", markersize=20)
+
+
+
+plt.text(s=r"y", x=-0.2, y=2, rotation=0)
+plt.xlabel(r"x")
+
+plt.show()
+
+#making a decision about a colorof a given point x>9
+
+
+plt.vlines(9, -0.1, 5)
+
+plt.fill_between([0, 8], [-0.1, -0.1], [5, 5], color="red", alpha=0.1)
+plt.fill_between([9, 3.5], [-0.1, -0.1], [5, 5], color="blue", alpha=0.1)
+
+
+plt.text(s=r"y", x=-0.5, y=2, rotation=0)
+plt.xlabel(r"x")
+
+#plt.show()
+
+from _plotting_ import _plot_trees_
+_plot_trees_()
+
+plt.show()
+
+
+#add another branch to a decision tree
+from _plotting_ import _plot_tree_2
+_plot_tree_2()
+plt.show()
+
+
 \item Find the 9s using Random Forests.
+
+mnist_data = "/home/dominiquecacuna/Documents/UCR/PHYS243/HW/mnist.data"
+mnist_dataset = Data_Set(name = "mnist dataset",
+                      target_attribute=9,
+                      file_info=(mnist_data, None, ","))
+tree_mnist = Decision_Tree_Learner(mnist_dataset)
+tree_mnist.display_out()
+
+Test inv-nodes
+ inv-nodes = 0-58527 ---> Test number
+      number = 0-8 ---> Result = no
+         
+      number = 9 ---> Result = yes
+           
+
+mnist_Train, mnist_test = mnist_dataset.train_test_split(test_fraction=0.2, Seed=90)
+RF_mnist = Random_Forest(mnist_Train, n = 100)
+def Measure_accuracy(true_values, predictions):
+    _sum_ = 0
+    for truth, prediction in zip(true_values, predictions):
+        if truth==prediction:
+            _sum_+=1
+    return _sum_/len(predictions)
+rf_predictions = [RF_mnist(a[:-1]) for a in mnist_test.examples]
+true_Test_values = [example[mnist_test.target_attribute] for example in mnist_test.examples]
+
+Measure_accuracy(true_Test_values, rf_predictions)
+
+def plot_the_accuracy(train_set, test_set, list_of_tree_num = np.arange(10, 100, 10)):
+    accuracy =[]
+    for n in list_of_tree_num:
+        RF_mnist = Random_Forest(train_set, n=n)
+        _predictions = [RF_mnist(a[:-1]) for a in test_set.examples]
+        _true_values = [example[test_set.target_attribute] for example in test_set.examples]
+        accuracy.append(Measure_accuracy(_true_values, _predictions))
+
+    fig = plt.plot(list_of_tree_num, accuracy)
+    return fig, accuracy
+
+acc, fig = plot_the_accuracy(mnist_Train, mnist_test, list(range(5, 60)))
+
+plt.title(r"Accuracy for Random Forests predctions", fontsize=15)
+plt.xlabel(r"Number of trees", fontsize=12)
+plt.ylabel(r"Accuracy", fontsize=12)
+Text(0, 0.5, 'Accuracy')
+
+
 \end{enumerate}
+
 
 \begin{figure}[ht]
 \begin{center}
@@ -81,10 +418,377 @@ For each section below you need to measure your performance. So, make sure to ru
 \subsection*{Find every single digits!}
 \begin{enumerate}
 \item First forget about the labels and run the k-means algorithm to find whether there is an underlying patterns. So, first find the $k$ clusters (here is obviously $10$ clusters). Then look at their labels and find the accuracy. By doing this you are turning a supervised learning into an unsupervised learning! 
-
 \item Find the digits using K-Nearest neighbours for Minkowski metric of order (1, 2, 3). 
+
+import numpy as np
+import random
+import matplotlib.pyplot as plt
+
+
+# use LaTeX fonts in the plot
+plt.rc('text', usetex=True)
+plt.rc('font', family='serif')
+
+try:
+    from sklearn.datasets import fetch_openml
+    mnist = fetch_openml('mnist_784', version=1, cache=True)
+    mnist.target = mnist.target.astype(np.int8)
+except ImportError:
+    from sklearn.datasets import fetch_mldata
+    mnist = fetch_mldata('MNIST original')
+mnist["data"], mnist["target"]
+
+
+(array([[0., 0., 0., ..., 0., 0., 0.],
+        [0., 0., 0., ..., 0., 0., 0.],
+        [0., 0., 0., ..., 0., 0., 0.],
+        ...,
+        [0., 0., 0., ..., 0., 0., 0.],
+        [0., 0., 0., ..., 0., 0., 0.],
+        [0., 0., 0., ..., 0., 0., 0.]]),
+ array([5, 0, 4, ..., 4, 5, 6]))
+    
+example = mnist["data"][-1].reshape(28, 28)
+
+import matplotlib as mpl
+
+plt.imshow(example, cmap=mpl.cm.binary)
+
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
+from sklearn import svm
+
+#Using the first 5000 data points
+X_train, X_test, y_train, y_test = train_test_split(mnist["data"][:5000], mnist["target"][:5000], test_size=0.2)
+svm_clf = svm.SVC(kernel="linear",)
+svm_clf.fit(X_train, y_train)
+
+y_prediction = svm_clf.predict(X_test)
+print("The accuracy of the predictions on the test set is =", Measure_accuracy(y_test, y_prediction))
+
+import matplotlib as mpl
+plt.figure(figsize=(12, 12))
+
+j = 331
+for i in range(0,9):
+    example = X_test[i].reshape(28, 28)
+    plt.subplot(j); plt.imshow(example, cmap=mpl.cm.binary)
+    plt.text(0, 2, "prediction = {}".format(y_prediction[i]))
+    j+=1
+
+plt.show()
+
+def Minkowski_d(x1, x2, p=3):
+    """ Function from L^p
+    This is a function for defining a general distance measure between any
+    given N-dimensional vectors:     x1, x2
+
+    INPUT:
+    ------
+           x1 (list or array of floats) : First vector
+           x2 (list or array of floats) : Second vector
+           p (float) : The power in our Minkowski definition
+
+    OUTPUT:
+    -------
+            (float) : The Minkowski distance of power p
+                      between x1 and x2
+    """
+
+    # Assuming we have a list or an array of numbers
+    # Creating a variable for summation
+    _sum_=0
+    # Now we go through every element on the arrays and
+    # will find the distance and add them  
+    for x1_, x2_ in zip(x1, x2):
+        dummy = pow(abs(x1_-x2_), p)
+        _sum_+=dummy
+    distance = pow(_sum_, 1/p)
+    return distance
+
+Minkowski_d(np.linspace(1,100,200), np.zeros(200), 10.4)
+
+class Point:
+    def __init__(self, features, label = None, \
+                 name = "Unassigned"):
+        self.name = name
+        self.features = features
+        self.label = label
+
+    # get the dimensionality of the features
+    def get_dimension(self):
+        return len(self.features)
+
+    def get_features(self):
+        return self.features
+
+    def get_label(self):
+        return self.label
+
+    def get_name(self):
+        return self.name
+
+    def distance_Minkowski(self, other, p = 3):
+        return Minkowski_d(self.features, other.get_features(), p)
+    distance_Minkowski.__doc__ = Minkowski_d.__doc__
+
+    def get_norm(self, p = 3):
+        _zero_=[0 for _ in range(self.get_dimension())]
+        return Minkowski_d(self.features, _zero_, p)
+
+    def __str__(self):
+        return self.name +" : "+ str(self.features) + ' : '\
+               + str(self.label)
+               
+class Cluster:
+    def __init__(self, points):
+        self.points = points
+        self.centroid = self.find_centroid()
+
+    def find_centroid(self):
+        _sum_ = np.zeros(self.points[0].get_dimension())
+        for point in self.points:
+            _sum_+=np.array(point.get_features())
+        Centroid_vec = _sum_/len(self.points)
+        centroid = Point(Centroid_vec, name = "Centroid")
+        return centroid
+
+    def update(self, points):
+        # Keep the old centroid
+        previous_centroid = self.centroid
+        # Update the Cluster attribiutes
+        self.points = points
+        self.centroid = self.find_centroid()
+        return self.centroid.distance_Minkowski(previous_centroid)
+
+    def variability(self, p = 3):
+        _sum_distances_=0
+        for point in self.points:
+            _sum_distances_ += point.distance_Minkowski(self.centroid, p)
+        return _sum_distances_
+
+
+    def Elements(self):
+        for point in self.points:
+            yield point
+
+    def __str__(self):
+        names = []
+        for point in self.points:
+            names.append(point.get_name())
+        names.sort()
+        info = "Cluster Centroid: " \
+               + str(self.centroid.features) +  "contains:" + "\n"
+        for name in names:
+            info = info + name + ", "
+        return info[:-2] #remove trailing comma and space  
+    
+def Dissimilarity(_clusters_, p = 3):
+    _tot_vari = 0
+    for _cluster_ in _clusters_:
+        _tot_vari += _cluster_.variability(p)
+    return _tot_vari
+
+data = {}
+
+with open("mnist.data", 'r') as f:
+    lines = f.readlines()
+    header = lines[0].split()
+
+    for i, col in enumerate(header):
+        x = []
+        for line in lines[1:]:
+            x.append(float(line.split()[i]))
+            data[col] = x
+
+  
+def K_Means_Clustering(points, k, verbose = False):
+    # Get k random initial centroids, create cluster for each
+    initial_centroids = random.sample(points, k)
+    clusters = []
+    for centroid in initial_centroids:
+        clusters.append(Cluster([centroid]))
+
+    #Iterate until centroids don't move
+    converged = False
+    number_iterations = 0
+    while not converged:
+        number_iterations += 1
+        #Create a list containing k distinct empty lists
+        new_clusters = []
+        for i in range(k):
+            new_clusters.append([])
+
+        # Associate each example with closest centroid
+        for p in points:
+            # Find the closest centroid
+            smallest_distance = p.distance_Minkowski(clusters[0].find_centroid())
+            idi = 0
+            for i in range(1, k):
+                distance = p.distance_Minkowski(clusters[i].find_centroid())
+                if distance < smallest_distance:
+                    smallest_distance = distance
+                    idi = i
+            #Add p to the list of examples for appropriate cluster
+            new_clusters[idi].append(p)
+
+        for c in new_clusters: # Avoid having empty clusters
+            if len(c) == 0:
+                raise ValueError('Empty Cluster')
+
+        # Update each cluster; check if a centroid has changed
+        converged = True
+        for i in range(k):
+            if clusters[i].update(new_clusters[i]) > 0.0:
+                converged = False
+        if verbose:
+            print('Iteration #' + str(number_iterations))
+            for c in clusters:
+                print(c)
+            print('') #add blank line
+    return clusters
+
+clusters = K_Means_Clustering(_points_, 3)
+color = "b"
+
+plt.figure(figsize=(10,7))
+
+for cluster in clusters:
+    for p in list(cluster.points):
+        plt.scatter(p.get_features()[0], p.get_features()[1], color = color)
+    color = "r"
+    plt.scatter(cluster.find_centroid().get_features()[0], cluster.find_centroid().get_features()[1], color = "k")
+
+plt.title(r"3-Means Clustering")
+
+
+plt.show()
+
 \item Find the digits using Decision tree. 
+import numpy as np
+import random
+import matplotlib.pyplot as plt
+
+x_c0 = 0
+x_c1 = 1
+x_c2 = 2
+x_c3 = 3
+x_c4 = 4
+x_c5 = 5
+x_c6 = 6
+x_c7 = 7
+x_c8 = 8
+x_c9 = 9
+
+
+
+DTC_2 = DecisionTreeClassifier(criterion="gini", max_depth=2)
+x_c123 = np.append(np.append(x_c0, x_c1, x_c2), x_c3, x_c4, x_c5,x_c6, x_c7, x_c8, x_c9)
+
+labels = ["red" for x in x_c1] + ["blue" for x in x_c2] + ["green" for x in x_c3]
+
+X = np.c_[x_c123, y_c123]
+print(X.shape)
+
+
+DTC_2.fit(X, labels)
+
+DecisionTreeClassifier(class_weight=None, criterion='gini', max_depth=2,
+                       max_features=None, max_leaf_nodes=None,
+                       min_impurity_decrease=0.0, min_impurity_split=None,
+                       min_samples_leaf=1, min_samples_split=2,
+                       min_weight_fraction_leaf=0.0, presort=False,
+                       random_state=None, splitter='best')
+x = np.linspace(0, 3.5, 9)
+
+x = np.meshgrid(x)
+
+x = x.ravel()
+
+X_testing = np.c_[x]
+
+colors = DTC_2.predict(X_testing)
+
+plt.scatter(x, c=colors, s = 1)
+
+
+
+plt.plot(x_c1, "r.", markersize=20)
+plt.plot(x_c2, "b.", markersize=20)
+plt.plot(x_c3, "g.", markersize=20)
+
+
+
+plt.vlines(best_x_classifier, 0, 5)
+plt.hlines(0, best_x_classifier)
+
+
+plt.title(r"skit-learn Decision Tree classifier prediction", fontsize =18)
+
+plt.xlabel(r"x")
+
+plt.show()
+
 \item Find the digits using Random Forests.
+
+
+mnist_data = "/home/dominiquecacuna/Documents/UCR/PHYS243/HW/mnist.data"
+mnist_dataset = Data_Set(name = "mnist dataset",
+                      file_info=(mnist_data, None, ","))
+tree_mnist = Decision_Tree_Learner(mnist_dataset)
+tree_mnist.display_out()
+
+Test inv-nodes
+ inv-nodes = 0-9 ---> Test half
+      half = 0-4 ---> Test quarter
+           quarter = 0-2 ---> Test last
+                 last = 0 ---> RESULT = 0
+                 last = 1 ---> RESULT = 1
+                 last = 2 ---> RESULT = 2
+
+           quarter = 3-5 ---> last
+                 last = 3 ---> RESULT = 3
+                 last = 4 ---> RESULT = 4
+                 last = 5 ---> RESULT = 5
+                 
+            quarter = 6-9 ---> last
+                 last = 6 ---> RESULT = 6
+                 last = 7 ---> RESULT = 7
+                 last = 8 ---> RESULT = 8
+                 last = 9 ---> RESULT = 9
+
+     
+
+mnist_Train, mnist_test = mnist_dataset.train_test_split(test_fraction=0.2, Seed=90)
+RF_mnist = Random_Forest(mnist_Train, n = 100)
+def Measure_accuracy(true_values, predictions):
+    _sum_ = 0
+    for truth, prediction in zip(true_values, predictions):
+        if truth==prediction:
+            _sum_+=1
+    return _sum_/len(predictions)
+rf_predictions = [RF_mnist(a[:-1]) for a in mnist_test.examples]
+true_Test_values = [example[mnist_test.target_attribute] for example in mnist_test.examples]
+
+Measure_accuracy(true_Test_values, rf_predictions)
+
+def plot_the_accuracy(train_set, test_set, list_of_tree_num = np.arange(10, 100, 10)):
+    accuracy =[]
+    for n in list_of_tree_num:
+        RF_mnist = Random_Forest(train_set, n=n)
+        _predictions = [RF_mnist(a[:-1]) for a in test_set.examples]
+        _true_values = [example[test_set.target_attribute] for example in test_set.examples]
+        accuracy.append(Measure_accuracy(_true_values, _predictions))
+
+    fig = plt.plot(list_of_tree_num, accuracy)
+    return fig, accuracy
+
+acc, fig = plot_the_accuracy(mnist_Train, mnist_test, list(range(5, 60)))
+
+plt.title(r"Accuracy for Random Forests predctions", fontsize=15)
+plt.xlabel(r"Number of trees", fontsize=12)
+plt.ylabel(r"Accuracy", fontsize=12)
+Text(0, 0.5, 'Accuracy')
 
 \item Comment on any significant difference between your results for the \textbf{binary classifier} vs \textbf{multi-class classifier}s.
 \end{enumerate}
