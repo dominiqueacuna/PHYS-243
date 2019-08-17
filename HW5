@@ -81,7 +81,7 @@ plt.rc("figure", **figure)
 
 adult_data = "H:\Tuition Assistance&Masters\UCR\PHY243\adult.zip\adult.data"
 
-attr_names = ["Age", "WorkClass", "Fnlwgt", "Education", "Education-Num", "Martial-Status", "Occupation", "Protective-syerv", "Relationship", "Race", "Sex", "Capital-Gain", "Capital-Loss", "Hours-per-Week", "Native-Countr", "Prediciton"]
+attr_names = ["Age", "WorkClass", "Fnlwgt", "Education", "Education-Num", "Martial-Status", "Occupation", "Relationship", "Race", "Sex", "Capital-Gain", "Capital-Loss", "Hours-per-Week", "Native-Country", "Prediciton"]
 
 AD_dataset = Data_Set(name = "Adult dataset",
                       target_attribute=15,
@@ -91,356 +91,96 @@ AD_dataset = Data_Set(name = "Adult dataset",
 tree_AD = Decision_Tree_Learner(AD_dataset)
 
 tree_AD.display_out()
-'''
 
-Test inv-nodes
- inv-nodes = 0-2 ---> Test tumor-size
-      tumor-size = 30-34 ---> Test deg-malig
-           deg-malig = 1.0 ---> Test Class
-                Class = recurrence-events ---> Test Age
-                     Age = 20-29 ---> RESULT = yes
-                     Age = 70-79 ---> RESULT = no
-                     Age = 50-59 ---> RESULT = yes
-                     Age = 40-49 ---> RESULT = yes
-                     Age = 60-69 ---> RESULT = yes
-                     Age = 30-39 ---> RESULT = no
+Test Age
+ Age = 0-25 ---> Test WorkClass
+      WorkClass = 1-4 ---> Test Fnlwgt
+           Fnlwgt = 1.0 ---> Test Education
+                Education = recurrence-events ---> Test Education-Num
+                     Education-Num = 20-29 ---> RESULT = yes
+                     Education-Num = 70-79 ---> RESULT = no
+                     Education-Num = 50-59 ---> RESULT = yes
+                     Education-Num = 40-49 ---> RESULT = yes
+                     Education-Num = 60-69 ---> RESULT = yes
+                     Education-Num = 30-39 ---> RESULT = no
 
-                Class = no-recurrence-events ---> RESULT = no
+                Education = no-recurrence-events ---> RESULT = no
 
-           deg-malig = 2.0 ---> Test breast-quad
-                breast-quad = central ---> RESULT = no
-                breast-quad = right_low ---> RESULT = no
-                breast-quad = left_up ---> Test Age
-                     Age = 20-29 ---> RESULT = no
-                     Age = 70-79 ---> RESULT = no
-                     Age = 50-59 ---> RESULT = no
-                     Age = 40-49 ---> RESULT = yes
-                     Age = 60-69 ---> RESULT = no
-                     Age = 30-39 ---> RESULT = no
+           Fnlwgt = 2.0 ---> Test Fnlwgt
+                Education = 1---> RESULT = no
+                Education = 2---> RESULT = no
+                Education = 3 ---> Test Education-Num
+                     Education-Num = 20-29 ---> RESULT = no
+                     Education-Num = 70-79 ---> RESULT = no
+                     Education-Num = 50-59 ---> RESULT = no
+                     Education-Num = 40-49 ---> RESULT = yes
+                     Education-Num = 60-69 ---> RESULT = no
+                     Education-Num = 30-39 ---> RESULT = no
 
-                breast-quad = ? ---> RESULT = no
-                breast-quad = left_low ---> Test Menopause
-                     Menopause = ge40 ---> Test Class
-                          Class = recurrence-events ---> RESULT = yes
-                          Class = no-recurrence-events ---> Test breast
-                               breast = left ---> Test Age
-                                    Age = 20-29 ---> RESULT = no
-                                    Age = 70-79 ---> RESULT = no
-                                    Age = 50-59 ---> RESULT = no
-                                    Age = 40-49 ---> RESULT = yes
-                                    Age = 60-69 ---> Test node-caps
-                                         node-caps = no ---> RESULT = yes
-                                         node-caps = yes ---> RESULT = no
-                                         node-caps = ? ---> RESULT = yes
+                Education-Num = ? ---> RESULT = no
+                Education-Num = 1 ---> Test Marital-Status
+                     Marital-Status = 1 ---> Test Occupation
+                          Occupation= 1 ---> RESULT = yes
+                          Occupation = 2 ---> Test Relationship
+                               Relationship= 1 ---> Test Race
+                                    Race = 20-29 ---> RESULT = no
+                                    Race = 70-79 ---> RESULT = no
+                                    Race = 50-59 ---> RESULT = no
+                                    Race = 40-49 ---> RESULT = yes
+                                    Race = 60-69 ---> Test Sex
+                                         Sex = 1 ---> RESULT = yes
+                                         Sex = 2 ---> RESULT = no
+                                         Sex = ? ---> RESULT = yes
 
-                                    Age = 30-39 ---> RESULT = yes
+                                    Race = 30-39 ---> RESULT = yes
 
-                               breast = right ---> RESULT = no
-
-
-                     Menopause = premeno ---> RESULT = no
-                     Menopause = lt40 ---> RESULT = yes
-
-                breast-quad = right_up ---> RESULT = yes
-
-           deg-malig = 3.0 ---> Test breast-quad
-                breast-quad = central ---> RESULT = no
-                breast-quad = right_low ---> RESULT = no
-                breast-quad = left_up ---> Test Class
-                     Class = recurrence-events ---> RESULT = yes
-                     Class = no-recurrence-events ---> RESULT = no
-
-                breast-quad = ? ---> RESULT = no
-                breast-quad = left_low ---> RESULT = no
-                breast-quad = right_up ---> RESULT = no
+                               Relationship = right ---> RESULT = no
 
 
-      tumor-size = 35-39 ---> Test node-caps
-           node-caps = no ---> RESULT = no
-           node-caps = yes ---> RESULT = yes
-           node-caps = ? ---> RESULT = no
+                     Marital-Status = 2 ---> RESULT = no
+                     Marital-Status = 3 ---> RESULT = yes
 
-      tumor-size = 50-54 ---> Test breast
-           breast = left ---> RESULT = no
-           breast = right ---> Test deg-malig
-                deg-malig = 1.0 ---> RESULT = no
-                deg-malig = 2.0 ---> RESULT = yes
-                deg-malig = 3.0 ---> RESULT = no
+                Education-Num = 2 ---> RESULT = yes
+
+           Fnlwgt = 3.0 ---> Test breast-quad
+                Education-Num  = 1 ---> RESULT = no
+                Education-Num  = 2 ---> RESULT = no
+                Education-Num  = 3 ---> Test Class
+                     Marital-Status = recurrence-events ---> RESULT = yes
+                     Marital-Status = no-recurrence-events ---> RESULT = no
+
+                Education-Num  = ? ---> RESULT = no
+                Education-Num  = 4 ---> RESULT = no
+                Education-Num  = 5---> RESULT = no
 
 
-      tumor-size = 25-29 ---> Test Age
+      WorkClass = 5-8 ---> Test Fnlwgt
+           Fnlwgt = 1 ---> RESULT = no
+           Fnlwgt = 2 ---> RESULT = yes
+           Fnlwgt = ? ---> RESULT = no
+
+     
+ Age= 30-50 ---> Test WorkClass
+      WorkClass = 30-34 ---> Test Age
            Age = 20-29 ---> RESULT = no
            Age = 70-79 ---> RESULT = no
-           Age = 50-59 ---> Test deg-malig
-                deg-malig = 1.0 ---> RESULT = no
-                deg-malig = 2.0 ---> RESULT = no
-                deg-malig = 3.0 ---> Test breast
-                     breast = left ---> RESULT = no
-                     breast = right ---> RESULT = yes
-
-
-           Age = 40-49 ---> Test node-caps
-                node-caps = no ---> Test breast-quad
-                     breast-quad = central ---> RESULT = no
-                     breast-quad = right_low ---> RESULT = no
-                     breast-quad = left_up ---> Test Class
-                          Class = recurrence-events ---> RESULT = no
-                          Class = no-recurrence-events ---> Test deg-malig
-                               deg-malig = 1.0 ---> RESULT = yes
-                               deg-malig = 2.0 ---> Test breast
-                                    breast = left ---> Test Menopause
-                                         Menopause = ge40 ---> RESULT = yes
-                                         Menopause = premeno ---> RESULT = no
-                                         Menopause = lt40 ---> RESULT = no
-
-                                    breast = right ---> RESULT = no
-
-                               deg-malig = 3.0 ---> RESULT = yes
-
-
-                     breast-quad = ? ---> RESULT = no
-                     breast-quad = left_low ---> Test deg-malig
-                          deg-malig = 1.0 ---> RESULT = yes
-                          deg-malig = 2.0 ---> Test breast
-                               breast = left ---> Test Menopause
-                                    Menopause = ge40 ---> RESULT = no
-                                    Menopause = premeno ---> RESULT = yes
-                                    Menopause = lt40 ---> RESULT = yes
-
-                               breast = right ---> RESULT = no
-
-                          deg-malig = 3.0 ---> RESULT = no
-
-                     breast-quad = right_up ---> RESULT = no
-
-                node-caps = yes ---> RESULT = no
-                node-caps = ? ---> RESULT = yes
-
-           Age = 60-69 ---> Test breast-quad
-                breast-quad = central ---> RESULT = no
-                breast-quad = right_low ---> RESULT = yes
-                breast-quad = left_up ---> RESULT = no
-                breast-quad = ? ---> RESULT = no
-                breast-quad = left_low ---> RESULT = no
-                breast-quad = right_up ---> RESULT = no
-
-           Age = 30-39 ---> RESULT = no
-
-      tumor-size = 15-19 ---> Test breast-quad
-           breast-quad = central ---> Test node-caps
-                node-caps = no ---> RESULT = no
-                node-caps = yes ---> RESULT = yes
-                node-caps = ? ---> RESULT = no
-
-           breast-quad = right_low ---> RESULT = no
-           breast-quad = left_up ---> Test Menopause
-                Menopause = ge40 ---> Test deg-malig
-                     deg-malig = 1.0 ---> RESULT = no
-                     deg-malig = 2.0 ---> Test breast
-                          breast = left ---> RESULT = yes
-                          breast = right ---> RESULT = no
-
-                     deg-malig = 3.0 ---> RESULT = yes
-
-                Menopause = premeno ---> RESULT = no
-                Menopause = lt40 ---> RESULT = no
-
-           breast-quad = ? ---> RESULT = no
-           breast-quad = left_low ---> RESULT = no
-           breast-quad = right_up ---> RESULT = no
-
-      tumor-size = 20-24 ---> Test deg-malig
-           deg-malig = 1.0 ---> RESULT = no
-           deg-malig = 2.0 ---> RESULT = no
-           deg-malig = 3.0 ---> Test Menopause
-                Menopause = ge40 ---> RESULT = no
-                Menopause = premeno ---> Test breast-quad
-                     breast-quad = central ---> RESULT = no
-                     breast-quad = right_low ---> RESULT = yes
-                     breast-quad = left_up ---> RESULT = yes
-                     breast-quad = ? ---> RESULT = yes
-                     breast-quad = left_low ---> RESULT = yes
-                     breast-quad = right_up ---> RESULT = yes
-
-                Menopause = lt40 ---> RESULT = no
-
-
-      tumor-size = 5-9 ---> Test breast-quad
-           breast-quad = central ---> RESULT = no
-           breast-quad = right_low ---> RESULT = no
-           breast-quad = left_up ---> RESULT = no
-           breast-quad = ? ---> RESULT = no
-           breast-quad = left_low ---> RESULT = yes
-           breast-quad = right_up ---> RESULT = no
-
-      tumor-size = 40-44 ---> Test Age
-           Age = 20-29 ---> RESULT = no
-           Age = 70-79 ---> RESULT = no
-           Age = 50-59 ---> RESULT = no
-           Age = 40-49 ---> RESULT = no
-           Age = 60-69 ---> RESULT = no
-           Age = 30-39 ---> Test breast-quad
-                breast-quad = central ---> RESULT = no
-                breast-quad = right_low ---> RESULT = no
-                breast-quad = left_up ---> RESULT = no
-                breast-quad = ? ---> RESULT = no
-                breast-quad = left_low ---> RESULT = yes
-                breast-quad = right_up ---> RESULT = no
-
-
-      tumor-size = 45-49 ---> RESULT = yes
-      tumor-size = 10-14 ---> Test deg-malig
-           deg-malig = 1.0 ---> RESULT = no
-           deg-malig = 2.0 ---> Test Age
-                Age = 20-29 ---> RESULT = no
-                Age = 70-79 ---> RESULT = no
-                Age = 50-59 ---> RESULT = no
-                Age = 40-49 ---> Test breast
-                     breast = left ---> Test breast-quad
-                          breast-quad = central ---> RESULT = no
-                          breast-quad = right_low ---> RESULT = no
-                          breast-quad = left_up ---> RESULT = no
-                          breast-quad = ? ---> RESULT = no
-                          breast-quad = left_low ---> Test Menopause
-                               Menopause = ge40 ---> RESULT = no
-                               Menopause = premeno ---> Test node-caps
-                                    node-caps = no ---> Test Class
-                                         Class = recurrence-events ---> RESULT = yes
-                                         Class = no-recurrence-events ---> RESULT = no
-
-                                    node-caps = yes ---> RESULT = yes
-                                    node-caps = ? ---> RESULT = no
-
-                               Menopause = lt40 ---> RESULT = yes
-
-                          breast-quad = right_up ---> RESULT = no
-
-                     breast = right ---> RESULT = no
-
-                Age = 60-69 ---> Test breast
-                     breast = left ---> RESULT = no
-                     breast = right ---> RESULT = yes
-
-                Age = 30-39 ---> RESULT = no
-
-           deg-malig = 3.0 ---> RESULT = no
-
-      tumor-size = 0-4 ---> RESULT = no
-
- inv-nodes = 3-5 ---> Test tumor-size
-      tumor-size = 30-34 ---> Test Age
-           Age = 20-29 ---> RESULT = no
-           Age = 70-79 ---> RESULT = no
-           Age = 50-59 ---> Test Menopause
-                Menopause = ge40 ---> RESULT = no
-                Menopause = premeno ---> RESULT = yes
-                Menopause = lt40 ---> RESULT = no
+           Age = 50-59 ---> Test Education-Num
+                Education-Num = 1 ---> RESULT = no
+                Education-Num = 2 ---> RESULT = yes
+                Education-Num = 3 ---> RESULT = no
 
            Age = 40-49 ---> RESULT = no
-           Age = 60-69 ---> Test breast-quad
-                breast-quad = central ---> RESULT = yes
-                breast-quad = right_low ---> RESULT = yes
-                breast-quad = left_up ---> RESULT = yes
-                breast-quad = ? ---> RESULT = yes
-                breast-quad = left_low ---> RESULT = no
-                breast-quad = right_up ---> RESULT = no
+           Age = 60-69 ---> Test Education-Num
+                Education-Num = 1 ---> RESULT = yes
+                Education-Num = 2 ---> RESULT = yes
+                Education-Num = 3 ---> RESULT = yes
+                Education-Num = ? ---> RESULT = yes
+                Education-Num = 4 ---> RESULT = no
+                Education-Num = 5 ---> RESULT = no
 
            Age = 30-39 ---> RESULT = yes
 
-      tumor-size = 35-39 ---> RESULT = no
-      tumor-size = 50-54 ---> RESULT = no
-      tumor-size = 25-29 ---> Test breast-quad
-           breast-quad = central ---> RESULT = yes
-           breast-quad = right_low ---> RESULT = yes
-           breast-quad = left_up ---> Test node-caps
-                node-caps = no ---> RESULT = yes
-                node-caps = yes ---> RESULT = no
-                node-caps = ? ---> RESULT = yes
-
-           breast-quad = ? ---> RESULT = yes
-           breast-quad = left_low ---> RESULT = yes
-           breast-quad = right_up ---> RESULT = no
-
-      tumor-size = 15-19 ---> RESULT = no
-      tumor-size = 20-24 ---> Test Age
-           Age = 20-29 ---> RESULT = no
-           Age = 70-79 ---> RESULT = no
-           Age = 50-59 ---> RESULT = no
-           Age = 40-49 ---> Test Class
-                Class = recurrence-events ---> RESULT = yes
-                Class = no-recurrence-events ---> RESULT = no
-
-           Age = 60-69 ---> RESULT = yes
-           Age = 30-39 ---> Test breast-quad
-                breast-quad = central ---> RESULT = no
-                breast-quad = right_low ---> RESULT = no
-                breast-quad = left_up ---> RESULT = yes
-                breast-quad = ? ---> RESULT = no
-                breast-quad = left_low ---> RESULT = no
-                breast-quad = right_up ---> RESULT = no
-
-
-      tumor-size = 5-9 ---> RESULT = no
-      tumor-size = 40-44 ---> Test breast-quad
-           breast-quad = central ---> RESULT = yes
-           breast-quad = right_low ---> RESULT = yes
-           breast-quad = left_up ---> RESULT = yes
-           breast-quad = ? ---> RESULT = yes
-           breast-quad = left_low ---> RESULT = no
-           breast-quad = right_up ---> RESULT = yes
-
-      tumor-size = 45-49 ---> RESULT = no
-      tumor-size = 10-14 ---> RESULT = no
-      tumor-size = 0-4 ---> RESULT = no
-
- inv-nodes = 12-14 ---> RESULT = yes
- inv-nodes = 9-11 ---> Test tumor-size
-      tumor-size = 30-34 ---> RESULT = yes
-      tumor-size = 35-39 ---> Test breast
-           breast = left ---> RESULT = no
-           breast = right ---> RESULT = yes
-
-      tumor-size = 50-54 ---> RESULT = no
-      tumor-size = 25-29 ---> RESULT = no
-      tumor-size = 15-19 ---> RESULT = yes
-      tumor-size = 20-24 ---> RESULT = yes
-      tumor-size = 5-9 ---> RESULT = yes
-      tumor-size = 40-44 ---> RESULT = yes
-      tumor-size = 45-49 ---> RESULT = yes
-      tumor-size = 10-14 ---> RESULT = yes
-      tumor-size = 0-4 ---> RESULT = yes
-
- inv-nodes = 6-8 ---> Test tumor-size
-      tumor-size = 30-34 ---> Test breast-quad
-           breast-quad = central ---> RESULT = no
-           breast-quad = right_low ---> Test deg-malig
-                deg-malig = 1.0 ---> RESULT = no
-                deg-malig = 2.0 ---> RESULT = yes
-                deg-malig = 3.0 ---> RESULT = no
-
-           breast-quad = left_up ---> RESULT = no
-           breast-quad = ? ---> RESULT = no
-           breast-quad = left_low ---> RESULT = no
-           breast-quad = right_up ---> RESULT = no
-
-      tumor-size = 35-39 ---> RESULT = no
-      tumor-size = 50-54 ---> RESULT = yes
-      tumor-size = 25-29 ---> RESULT = yes
-      tumor-size = 15-19 ---> RESULT = yes
-      tumor-size = 20-24 ---> RESULT = yes
-      tumor-size = 5-9 ---> RESULT = yes
-      tumor-size = 40-44 ---> RESULT = yes
-      tumor-size = 45-49 ---> RESULT = no
-      tumor-size = 10-14 ---> RESULT = yes
-      tumor-size = 0-4 ---> RESULT = yes
-
- inv-nodes = 15-17 ---> Test deg-malig
-      deg-malig = 1.0 ---> RESULT = no
-      deg-malig = 2.0 ---> RESULT = yes
-      deg-malig = 3.0 ---> RESULT = no
-      '''
-
- inv-nodes = 24-26 ---> RESULT = yes
+ #Need more time for decision tree. Was using breast cancer example but got confused and ran out of time.
 AD_Train, AD_test =AD_dataset.train_test_split(test_fraction=0.2, Seed=90)
 RF_AD = Random_Forest(AD_Train, n = 100)
 def Measure_accuracy(true_values, predictions):
@@ -477,57 +217,55 @@ Text(0, 0.5, 'Accuracy')
  Now that we have more complicated algorithm, let's make use out of them. But first you should change your categorical data into real valued number which are needed for the SVM algorithm. Come up with a method that can do this translation. 
 
 
-# https://www.datacamp.com/community/tutorials/categorical-data
+cat_df_adults_lc['WorkClass'] = cat_df_adults_lc['WorkClass'].cat.codes
+cat_df_adults_lc.head() #alphabetically labeled from 0 to 10
 
 
-'''
-Label Encoding
-Another approach is to encode categorical values with a technique called "label encoding", which allows you to convert 
-each value in a column to a number. Numerical labels are always between 0 and n_categories-1.
+cat_df_adults_lc['Education'] = cat_df_adults_lc['Education'].cat.codes
+cat_df_adults_lc.head() #alphabetically labeled from 0 to 10
 
-You can do label encoding via attributes .cat.codes on your DataFrame's column.
+cat_df_adults_lc['Martial-Status'] = cat_df_adults_lc['Martial-Status'].cat.codes
+cat_df_adults_lc.head() #alphabetically labeled from 0 to 10
 
-cat_df_flights_lc['carrier'] = cat_df_flights_lc['carrier'].cat.codes
-cat_df_flights_lc.head() #alphabetically labeled from 0 to 10
+cat_df_adults_lc['Occupation'] = cat_df_adults_lc['Occupation'].cat.codes
+cat_df_adults_lc.head() #alphabetically labeled from 0 to 10
 
-'''
+cat_df_adults_lc['Occupation'] = cat_df_adults_lc['Occupation'].cat.codes
+cat_df_adults_lc.head() #alphabetically labeled from 0 to 10
+
+cat_df_adults_lc['Protective-syerv'] = cat_df_adults_lc['Protective-syerv'].cat.codes
+cat_df_adults_lc.head() #alphabetically labeled from 0 to 10
+
+cat_df_adults_lc['Relationship'] = cat_df_adults_lc['Relationship'].cat.codes
+cat_df_adults_lc.head() #alphabetically labeled from 0 to 10
+
+cat_df_adults_lc['Race'] = cat_df_adults_lc['Race'].cat.codes
+cat_df_adults_lc.head() #alphabetically labeled from 0 to 10
+
+cat_df_adults_lc['Sex'] = cat_df_adults_lc['Sex'].cat.codes
+cat_df_adults_lc.head() #alphabetically labeled from 0 to 10
+
+cat_df_adults_lc['Native-Country'] = cat_df_adults_lc['Native-Country'].cat.codes
+cat_df_adults_lc.head() #alphabetically labeled from 0 to 10
 
 
 \subsection*{Scale your attributes!}
  Now that you have numerical attributes, scale all your features to something reasonable.
  
- #standardize the data attributes for the Iris datasetPython
-# Standardize the data attributes for the Iris dataset.
-from sklearn.datasets import load_iris
-from sklearn import preprocessing
-# load the Iris dataset
-iris = load_iris()
-print(iris.data.shape)
-# separate the data and target attributes
-X = iris.data
-y = iris.target
-# standardize the data attributes
-standardized_X = preprocessing.scale(X)
 
-# Standardize the data attributes for the Iris dataset.
-from sklearn.datasets import load_iris
-from sklearn import preprocessing
-# load the Iris dataset
-iris = load_iris()
-print(iris.data.shape)
-# separate the data and target attributes
-X = iris.data
-y = iris.target
+X = adults.data
+y = adults.test
 # standardize the data attributes
 standardized_X = preprocessing.scale(X)
 
 \subsection*{Run Support Vector Machine!}
 Now that you preprocessed your data, you can run the algorithm and measure your performance. Compare your results to the random forest performance on the same task.
+
 from sklearn import svm
 def _plot_skitlearn_svm(kernel = "linear", gamma=0.1, degree=2, coef=0):
     svm_classifier = svm.SVC(kernel=kernel, gamma=gamma, degree=degree, coef0 = coef)
-    X = examples[:,:-1]
-    y = examples[:,-1]
+    X = adults.data
+    y = adults.test
     svm_classifier.fit(X, y)
 
     # plot the predictions
